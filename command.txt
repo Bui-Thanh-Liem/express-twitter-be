@@ -1,0 +1,6 @@
+---- create file ----
+echo. > main.js
+
+---- create folder ----
+mkdir user
+
