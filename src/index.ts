@@ -1,23 +1,19 @@
 import express from 'express'
+import morgan from 'morgan'
+import { loggerMiddleware } from './middlewares/logger.middleware'
+import tweetsRoute from './routes/tweets.routes'
+import usersRoute from './routes/users.routes'
 
 const app = express()
 const port = 3000
-const router = express.Router()
 
-app.use((req, res, next) => {
-  console.log(new Date())
-  next()
-})
+app.use(morgan('dev'))
+app.use(loggerMiddleware)
+app.use(express.json())
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
-
-router.get('/tweets', (req, res) => {
-  res.json({ message: 'data tweets' })
-})
-
-app.use('/api', router)
+//
+app.use('/users', usersRoute)
+app.use('/tweets', tweetsRoute)
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
