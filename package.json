@@ -33,7 +33,11 @@
     "typescript-eslint": "^8.29.0"
   },
   "dependencies": {
+    "dotenv": "^16.5.0",
     "express": "^5.1.0",
-    "morgan": "^1.10.0"
+    "express-validator": "^7.2.1",
+    "mongodb": "^6.17.0",
+    "morgan": "^1.10.0",
+    "zod": "^3.25.63"
   }
 }

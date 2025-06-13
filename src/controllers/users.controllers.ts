@@ -1,9 +1,15 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
+import UsersService from '~/services/User.service'
 
-export function usersController(req: Request, res: Response) {
-  const { page, limit } = req.body
-  console.log('page:::', page)
-  console.log('limit:::', limit)
-
-  res.status(200).json({ message: 'users route' })
+export class UsersController {
+  async register(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = await UsersService.register(req.body)
+      res.json({ message: 'ok', data: result })
+    } catch (error) {
+      next(error)
+    }
+  }
 }
+
+export default new UsersController()

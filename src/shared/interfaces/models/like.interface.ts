@@ -1,6 +1,7 @@
+import { ObjectId } from 'mongodb'
 import { IBase } from './base.interface'
 
 export interface ILike extends IBase {
-  user_id: string
-  tweet_id: string
+  user_id: ObjectId
+  tweet_id: ObjectId
 }
