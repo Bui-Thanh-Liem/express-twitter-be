@@ -5,7 +5,7 @@ import { envs } from '~/configs/env.config'
 export async function signToken({
   payload,
   privateKey = envs.JWT_SECRET,
-  options = { algorithm: 'ES256', expiresIn: envs.ACCESS_TOKEN_EXPIRES_IN as StringValue }
+  options = { algorithm: 'HS256', expiresIn: envs.ACCESS_TOKEN_EXPIRES_IN as StringValue }
 }: {
   payload: string | object
   privateKey?: string

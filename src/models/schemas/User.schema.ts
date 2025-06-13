@@ -37,4 +37,4 @@ export class UserSchema extends BaseSchema {
   }
 }
 
-export const UserCollection = database.getDb().collection<IUser>('users')
+export const UserCollection = database.getDb().collection('users') as Collection<UserSchema>

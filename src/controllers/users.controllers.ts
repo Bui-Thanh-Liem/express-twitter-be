@@ -12,7 +12,12 @@ class UsersController {
   }
 
   async login(req: Request, res: Response, next: NextFunction) {
-    
+    try {
+      const result = await UsersService.login(req.body)
+      res.json({ message: 'ok', data: result })
+    } catch (error) {
+      next(error)
+    }
   }
 }
 

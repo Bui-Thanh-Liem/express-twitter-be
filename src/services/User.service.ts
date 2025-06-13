@@ -1,6 +1,9 @@
+import { StringValue } from 'ms'
+import { envs } from '~/configs/env.config'
 import { LoginUserDto, RegisterUserDto } from '~/dtos/User.dto'
 import { UserCollection, UserSchema } from '~/models/schemas/User.schema'
 import { hashPassword, verifyPassword } from '~/utils/crypto.util'
+import { signToken } from '~/utils/jwt.util'
 
 class UsersService {
   async register(payload: RegisterUserDto) {
@@ -22,13 +25,40 @@ class UsersService {
 
   async login(payload: LoginUserDto) {
     //
+    console.log('payload::', payload)
+
     const exist = await this.findOneByEmail(payload.email)
-    if (exist) {
+    console.log('exist::', exist)
+
+    if (!exist) {
       throw Error('Email does not exist')
     }
 
     //
-    const verifyPass = verifyPassword(payload.password, exist.)
+    const verifyPass = verifyPassword(payload.password, exist.password)
+    if (!verifyPass) {
+      throw Error('Password not correct')
+    }
+
+    //
+    const payloadToken = { user_id: exist._id }
+    const [access_token, refresh_token] = await Promise.all([
+      signToken({
+        payload: payloadToken,
+        options: { algorithm: 'HS256', expiresIn: envs.ACCESS_TOKEN_EXPIRES_IN as StringValue }
+      }),
+      signToken({
+        payload: payloadToken,
+        options: { algorithm: 'HS256', expiresIn: envs.REFRESH_TOKEN_EXPIRES_IN as StringValue }
+      })
+    ])
+
+    const { password, ...rest } = exist
+    return {
+      ...rest,
+      access_token,
+      refresh_token
+    }
   }
 
   async findOneByEmail(email: string) {
