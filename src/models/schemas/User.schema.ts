@@ -8,7 +8,7 @@ export class UserSchema extends BaseSchema {
   name: string
   email: string
   password: string
-  day_of_birth: string
+  day_of_birth: Date
   email_verify_token?: string
   forgot_password_token?: string
   verify?: EUserVerifyStatus
@@ -24,7 +24,7 @@ export class UserSchema extends BaseSchema {
     this.name = user.name || ''
     this.email = user.email || ''
     this.password = user.password || ''
-    this.day_of_birth = user.day_of_birth || ''
+    this.day_of_birth = user.day_of_birth || new Date()
     this.email_verify_token = user.email_verify_token || ''
     this.forgot_password_token = user.forgot_password_token || ''
     this.verify = user.verify || EUserVerifyStatus.Unverified
@@ -37,4 +37,4 @@ export class UserSchema extends BaseSchema {
   }
 }
 
-export const UserCollection = database.getDb().collection('users') as Collection<UserSchema>
+export const UserCollection = database.getDb().collection<IUser>('users')

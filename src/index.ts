@@ -4,7 +4,6 @@ import database from '~/configs/database.config'
 import { envs } from './configs/env.config'
 import { errorHandler } from './middlewares/errorhandler.middleware'
 import { loggerMiddleware } from './middlewares/logger.middleware'
-import tweetsRoute from './routes/tweets.routes'
 import usersRoute from './routes/users.routes'
 
 const app = express()
@@ -17,7 +16,6 @@ app.use(express.json())
 
 //
 app.use('/users', usersRoute)
-app.use('/tweets', tweetsRoute)
 
 //
 app.use(errorHandler)
@@ -29,7 +27,7 @@ async function bootstrap() {
     console.log('Database connected!')
 
     app.listen(port, host, () => {
-      console.log(`Example app listening on port ${port}`)
+      console.log(`Example app listening on ${host}:${port}`)
     })
   } catch (err) {
     await database.disconnect()

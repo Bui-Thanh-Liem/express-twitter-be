@@ -2,7 +2,6 @@ import { ErrorRequestHandler, NextFunction, Request, Response } from 'express'
 import { ZodError } from 'zod'
 
 export const errorHandler: ErrorRequestHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
-  console.error('Error:', err)
 
   if (err instanceof ZodError) {
     res.status(400).json({

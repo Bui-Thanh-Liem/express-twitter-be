@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 import UsersService from '~/services/User.service'
 
-export class UsersController {
+class UsersController {
   async register(req: Request, res: Response, next: NextFunction) {
     try {
       const result = await UsersService.register(req.body)
@@ -9,6 +9,10 @@ export class UsersController {
     } catch (error) {
       next(error)
     }
+  }
+
+  async login(req: Request, res: Response, next: NextFunction) {
+    
   }
 }
 

@@ -10,11 +10,22 @@ export const RegisterUserDtoSchema = z
         'Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character'
     }),
     confirm_password: z.string(),
-    day_of_birth: z.string()
+    day_of_birth: z.preprocess((arg) => {
+      if (typeof arg === 'string' || arg instanceof Date) {
+        return new Date(arg)
+      }
+      return arg
+    }, z.date())
   })
   .refine((data) => data.password === data.confirm_password, {
     path: ['confirm_password'],
     message: 'Passwords do not match'
   })
 
+export const LoginUserDtoSchema = z.object({
+  email: z.string().email(),
+  password: z.string()
+})
+
 export type RegisterUserDto = z.infer<typeof RegisterUserDtoSchema>
+export type LoginUserDto = z.infer<typeof RegisterUserDtoSchema>

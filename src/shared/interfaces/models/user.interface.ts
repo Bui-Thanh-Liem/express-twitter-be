@@ -5,7 +5,7 @@ export interface IUser extends IBase {
   name: string
   email: string
   password: string
-  day_of_birth: string
+  day_of_birth: Date
   email_verify_token: string
   forgot_password_token: string
   verify: EUserVerifyStatus
