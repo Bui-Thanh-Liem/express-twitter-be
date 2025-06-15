@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import UsersControllers from '~/controllers/users.controllers'
-import { LoginUserDtoSchema, RegisterUserDtoSchema } from '~/dtos/User.dto'
+import { LoginUserDtoSchema, RegisterUserDtoSchema } from '~/dtos/requests/User.dto'
 import { wrapAsyncHandler } from '~/utils/wrapAsyncHandler.util'
 import { requestValidate } from '~/middlewares/requestValidate.middleware'
 

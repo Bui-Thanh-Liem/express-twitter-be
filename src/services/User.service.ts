@@ -1,6 +1,6 @@
 import { StringValue } from 'ms'
 import { envs } from '~/configs/env.config'
-import { LoginUserDto, RegisterUserDto } from '~/dtos/User.dto'
+import { LoginUserDto, RegisterUserDto } from '~/dtos/requests/User.dto'
 import { UserCollection, UserSchema } from '~/models/schemas/User.schema'
 import { TokenType } from '~/shared/enums/type.enum'
 import { hashPassword, verifyPassword } from '~/utils/crypto.util'
@@ -41,17 +41,17 @@ class UsersService {
     const [access_token, refresh_token] = await Promise.all([
       signToken({
         payload: { user_id: exist._id, type: TokenType.accessToken },
-        options: { algorithm: 'HS256', expiresIn: envs.ACCESS_TOKEN_EXPIRES_IN as StringValue }
+        options: { expiresIn: envs.ACCESS_TOKEN_EXPIRES_IN as StringValue }
       }),
       signToken({
         payload: { user_id: exist._id, type: TokenType.refreshToken },
-        options: { algorithm: 'HS256', expiresIn: envs.REFRESH_TOKEN_EXPIRES_IN as StringValue }
+        options: { expiresIn: envs.REFRESH_TOKEN_EXPIRES_IN as StringValue }
       })
     ])
 
     const { password, ...rest } = exist
     return {
-      ...rest,
+      user: rest,
       access_token,
       refresh_token
     }
