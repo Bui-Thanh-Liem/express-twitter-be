@@ -1,8 +1,8 @@
 abstract class AResponse<T = any> {
   statusCode: number = 200
   message: string
-  data?: T
-  stack?: any
+  data?: T    // dùng khi success
+  stack?: any // dùng khi error
   constructor({ statusCode, message, data, stack }: { statusCode: number; message: string; data?: T; stack?: any }) {
     this.statusCode = statusCode
     this.message = message
