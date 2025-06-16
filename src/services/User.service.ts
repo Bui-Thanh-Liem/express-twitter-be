@@ -2,6 +2,7 @@ import { StringValue } from 'ms'
 import { envs } from '~/configs/env.config'
 import { LoginUserDto, RegisterUserDto } from '~/dtos/requests/User.dto'
 import { UserCollection, UserSchema } from '~/models/schemas/User.schema'
+import { ConflictError } from '~/shared/classes/error.class'
 import { TokenType } from '~/shared/enums/type.enum'
 import { hashPassword, verifyPassword } from '~/utils/crypto.util'
 import { signToken } from '~/utils/jwt.util'
@@ -11,7 +12,7 @@ class UsersService {
     //
     const existEmail = await this.findOneByEmail(payload.email)
     if (existEmail) {
-      throw Error('Email already exists')
+      throw new ConflictError('Email already exists')
     }
 
     //

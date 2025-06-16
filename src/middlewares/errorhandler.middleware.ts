@@ -1,23 +1,53 @@
 import { ErrorRequestHandler, NextFunction, Request, Response } from 'express'
 import { ZodError } from 'zod'
+import { ErrorResponse } from '~/shared/classes/response.class'
 
 export const errorHandler: ErrorRequestHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
-  let statusCode = err.statusCode || 500
-  let message = err.message || 'Internal Server Error'
-  let details = {}
+  const isDev = process.env.NODE_ENV === 'development'
 
+  // Thông tin cơ bản
+  let statusCode: number = err.statusCode
+  let message: string = err.message
+  const stack = err.stack
+
+  // Thông tin bổ sung nếu là lỗi Zod
   if (err instanceof ZodError) {
     statusCode = 422
-    message = 'Validation error'
-    details = err.errors
+
+    //
+    const formattedErrors = err.errors.map((e) => ({
+      field: e.path.join('.'),
+      message: e.message
+    }))
+
+    //
+    message = formattedErrors.map((e) => e.message).join(' - ')
+
+    //
+    console.error('🛑 Zod Validation Error:', {
+      issues: err.issues,
+      formattedErrors
+    })
   }
 
-  res.status(statusCode).json({
-    error: {
-      message,
-      details,
-      ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
-    }
+  // Log đầy đủ để dev dễ debug
+  console.error('🛑 Error caught by middleware:', {
+    message: message,
+    statusCode: statusCode,
+    stack: stack,
+    otherFields: Object.keys(err)
+      .filter((k) => !['name', 'message', 'statusCode', 'stack', 'errors', 'issues', 'details'].includes(k))
+      .reduce(
+        (acc, key) => {
+          acc[key] = err[key]
+          return acc
+        },
+        {} as Record<string, any>
+      )
   })
-  return // thêm return để đảm bảo trả về void
+
+  // Trả response ra client
+  res.status(statusCode).json(new ErrorResponse(statusCode, message, isDev ? stack : {}))
+
+  return // đảm bảo không rơi vào nhánh nào khác
 }
