@@ -7,9 +7,15 @@ export abstract class AError extends Error {
   }
 }
 
-export abstract class BadRequestError extends AError {
+export class BadRequestError extends AError {
   constructor(message = 'Bad Request') {
     super(400, message)
+  }
+}
+
+export class UnauthorizedError extends AError {
+  constructor(message = 'Unauthorized') {
+    super(401, message)
   }
 }
 
@@ -25,7 +31,8 @@ export class ConflictError extends AError {
   }
 }
 
-export class ValidateError extends AError { // ít dùng, thường do sử dụng zod ở DTO và format error ở Error handler
+export class ValidateError extends AError {
+  // ít dùng, thường do sử dụng zod ở DTO và format error ở Error handler
   constructor(message = 'Validate Error') {
     super(422, message)
   }

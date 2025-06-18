@@ -27,5 +27,10 @@ export const LoginUserDtoSchema = z.object({
   password: z.string()
 })
 
+export const logoutUserDtoSchema = z.object({
+  accee: z.string().email(),
+  password: z.string()
+})
+
 export type RegisterUserDto = z.infer<typeof RegisterUserDtoSchema>
 export type LoginUserDto = z.infer<typeof RegisterUserDtoSchema>

@@ -4,7 +4,7 @@ import { EUserVerifyStatus } from '~/shared/enums/status.enum'
 import { IUser } from '~/shared/interfaces/schemas/user.interface'
 import { BaseSchema } from './Base.schema'
 
-export class UserSchema extends BaseSchema {
+export class UserSchema extends BaseSchema implements IUser {
   name: string
   email: string
   password: string

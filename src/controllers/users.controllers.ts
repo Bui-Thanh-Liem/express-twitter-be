@@ -11,10 +11,16 @@ class UsersController {
   async login(req: Request, res: Response, next: NextFunction) {
     try {
       const result = await UsersService.login(req.body)
-      res.json({ message: 'ok', data: result })
+      res.json({ message: 'Login Success', data: result })
     } catch (error) {
       next(error)
     }
+  }
+
+  async logout(req: Request, res: Response, next: NextFunction) {
+    const { refresh_token } = req.body
+    const result = await UsersService.logout(refresh_token)
+    res.status(200).json(new CreatedResponse('Logout Success', result))
   }
 }
 
