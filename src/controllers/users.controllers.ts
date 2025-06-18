@@ -1,17 +1,18 @@
 import { NextFunction, Request, Response } from 'express'
 import UsersService from '~/services/User.service'
-import { CreatedResponse } from '~/shared/classes/response.class'
+import { CreatedResponse, OkResponse } from '~/shared/classes/response.class'
+import { IJwtPayload } from '~/shared/interfaces/common/jwt.interface'
 
 class UsersController {
   async register(req: Request, res: Response) {
     const result = await UsersService.register(req.body)
-    res.json(new CreatedResponse('Register Success', result))
+    res.status(201).json(new CreatedResponse('Register Success', result))
   }
 
   async login(req: Request, res: Response, next: NextFunction) {
     try {
       const result = await UsersService.login(req.body)
-      res.json({ message: 'Login Success', data: result })
+      res.json(new OkResponse('Login Success', result))
     } catch (error) {
       next(error)
     }
@@ -20,7 +21,13 @@ class UsersController {
   async logout(req: Request, res: Response, next: NextFunction) {
     const { refresh_token } = req.body
     const result = await UsersService.logout(refresh_token)
-    res.status(200).json(new CreatedResponse('Logout Success', result))
+    res.json(new OkResponse('Logout Success', result))
+  }
+
+  async getMe(req: Request, res: Response, next: NextFunction) {
+    const { user_id } = req.decoded_authorization as IJwtPayload
+    const result = await UsersService.getMe(user_id)
+    res.json(new OkResponse('Get Me Success', result))
   }
 }
 

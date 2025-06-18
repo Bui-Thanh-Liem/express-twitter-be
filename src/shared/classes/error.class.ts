@@ -32,7 +32,7 @@ export class ConflictError extends AError {
 }
 
 export class ValidateError extends AError {
-  // ít dùng, thường do sử dụng zod ở DTO và format error ở Error handler
+  // ít dùng, do sử dụng zod ở DTO và format error ở Error handler
   constructor(message = 'Validate Error') {
     super(422, message)
   }

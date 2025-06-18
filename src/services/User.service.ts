@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb'
 import { StringValue } from 'ms'
 import { envs } from '~/configs/env.config'
 import { LoginUserDto, RegisterUserDto } from '~/dtos/requests/User.dto'
@@ -25,10 +26,11 @@ class UsersService {
       new UserSchema({ ...payload, password: passwordHashed, day_of_birth: new Date(payload.day_of_birth) })
     )
 
-    //
+    // Khi đăng kí thành công thì cho người dùng đăng nhập luônluôn
     const [access_token, refresh_token] = await this.signAccessAndRefreshToken({
       user_id: result.insertedId.toString()
     })
+    await RefreshTokenCollection.insertOne(new RefreshTokenSchema({ token: refresh_token, user_id: result.insertedId }))
 
     //
     return {
@@ -39,19 +41,10 @@ class UsersService {
 
   async login(payload: LoginUserDto) {
     //
-    const exist = await UserCollection.findOne(
-      { email: payload.email },
-      {
-        projection: {
-          email: 1,
-          password: 1
-        }
-      }
-    )
+    const exist = await this.findOneByEmail(payload?.email)
     if (!exist) {
       throw new UnauthorizedError('Email or password not correct')
     }
-    console.log('exist:::', exist)
 
     //
     const verifyPass = verifyPassword(payload.password, exist.password)
@@ -73,6 +66,28 @@ class UsersService {
 
   async logout(refresh_token: string) {
     return await RefreshTokenCollection.deleteOne({ token: refresh_token })
+  }
+
+  async getMe(id: string) {
+    return await UserCollection.findOne(
+      { _id: new ObjectId(id) },
+      {
+        projection: { password: 0, email_verify_token: 0, forgot_password_token: 0 }
+      }
+    )
+  }
+
+  // For auth
+  async findOneByEmail(email: string) {
+    return await UserCollection.findOne(
+      { email },
+      {
+        projection: {
+          email: 1,
+          password: 1
+        }
+      }
+    )
   }
 
   async signAccessAndRefreshToken(payload: Pick<IJwtPayload, 'user_id'>): Promise<[string, string]> {
