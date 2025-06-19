@@ -4,6 +4,7 @@ import { LoginUserDtoSchema, RegisterUserDtoSchema, verifyEmailDtoSchema } from 
 import { requestValidate } from '~/middlewares/requestValidate.middleware'
 import { verifyAccessToken } from '~/middlewares/verifyAccessToken.middleware'
 import { verifyRefreshToken } from '~/middlewares/verifyRefreshToken.middleware'
+import { verifyTempToken } from '~/middlewares/verifyTempToken.middleware'
 import { wrapAsyncHandler } from '~/utils/wrapAsyncHandler.util'
 
 const usersRoute = Router()
@@ -14,6 +15,7 @@ usersRoute.post('/logout', verifyAccessToken, verifyRefreshToken, wrapAsyncHandl
 usersRoute.get(
   '/verify-email',
   requestValidate(verifyEmailDtoSchema),
+  verifyTempToken,
   verifyAccessToken,
   wrapAsyncHandler(UsersControllers.verifyEmail)
 )

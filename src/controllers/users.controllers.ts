@@ -25,9 +25,9 @@ class UsersController {
   }
 
   async verifyEmail(req: Request, res: Response, next: NextFunction) {
-    const { verifyCode } = req.body
+    const { token } = req.body
     const { user_id } = req.decoded_authorization as IJwtPayload
-    const result = await UsersService.verifyEmail(user_id, verifyCode)
+    const result = await UsersService.verifyEmail(user_id, token)
     res.json(new OkResponse('Get Me Success', result))
   }
 

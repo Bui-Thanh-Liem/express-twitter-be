@@ -41,7 +41,7 @@ class MailService {
    * @param userName tên người nhận
    * @param verifyCode mã xác minh
    */
-  async sendVerifyEmail({ toEmail, name, verifyCode }: ISendVerifyEmail) {
+  async sendVerifyEmail({ toEmail, name, url }: ISendVerifyEmail) {
     const _mailOptions = {
       from: this.from,
       to: toEmail,
@@ -49,7 +49,7 @@ class MailService {
       template: 'verifyEmail',
       context: {
         name,
-        code: verifyCode
+        url
       }
     }
 

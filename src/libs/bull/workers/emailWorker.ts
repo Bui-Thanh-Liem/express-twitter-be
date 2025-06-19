@@ -4,8 +4,8 @@ import { emailQueue } from '../queues'
 emailQueue.process(async (job, done) => {
   try {
     console.log('Worker running...')
-    const { toEmail, name, verifyCode } = job.data
-    await mailServiceInstance.sendVerifyEmail({ toEmail, name, verifyCode })
+    const { toEmail, name, url } = job.data
+    await mailServiceInstance.sendVerifyEmail({ toEmail, name, url })
     console.log('Email sent to', toEmail)
     done() // Báo hoàn thành
   } catch (error) {

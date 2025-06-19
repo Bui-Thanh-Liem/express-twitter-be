@@ -1,5 +1,5 @@
 export interface ISendVerifyEmail {
   toEmail: string
   name: string
-  verifyCode: string
+  url: string
 }
