@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development npx nodemon",
+    "dev": "concurrently \"npm run start:server\" \"npm run start:worker\"",
+    "start:server": "cross-env NODE_ENV=development nodemon",
+    "start:worker": "cross-env NODE_ENV=development ts-node -r tsconfig-paths/register src/libs/bull/workers/emailWorker.ts",
     "build": "rimraf ./dist && tsc && tsc-alias",
     "start": "node dist/index.js",
     "lint": "eslint .",
@@ -23,6 +25,7 @@
     "@types/node": "^22.14.0",
     "@types/nodemailer": "^6.4.17",
     "@types/nodemailer-express-handlebars": "^4.0.5",
+    "concurrently": "^9.1.2",
     "cross-env": "^7.0.3",
     "eslint": "^9.23.0",
     "eslint-config-prettier": "^10.1.1",
@@ -31,12 +34,15 @@
     "nodemon": "^3.1.9",
     "prettier": "^3.5.3",
     "rimraf": "^6.0.1",
+    "ts-node": "^10.9.2",
     "tsc-alias": "^1.8.13",
+    "tsconfig-paths": "^4.2.0",
     "tsx": "^4.19.3",
-    "typescript": "^5.8.2",
+    "typescript": "^5.8.3",
     "typescript-eslint": "^8.29.0"
   },
   "dependencies": {
+    "bull": "^4.16.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "express-validator": "^7.2.1",
@@ -45,6 +51,7 @@
     "morgan": "^1.10.0",
     "nodemailer": "^7.0.3",
     "nodemailer-express-handlebars": "^7.0.0",
+    "redis": "^5.5.6",
     "zod": "^3.25.63"
   }
 }

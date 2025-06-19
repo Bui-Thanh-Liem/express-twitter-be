@@ -8,6 +8,9 @@ export const envs = {
   DB_PASSWORD: process.env.DB_PASSWORD || '',
   DB_NAME: process.env.DB_NAME || '',
 
+  REDIS_HOST: process.env.REDIS_HOST || '',
+  REDIS_PORT: Number(process.env.REDIS_PORT) || 6379,
+
   SERVER_PORT: Number(process.env.SERVER_PORT) || 9000,
   SERVER_HOST: process.env.SERVER_HOST || 'localhost',
 

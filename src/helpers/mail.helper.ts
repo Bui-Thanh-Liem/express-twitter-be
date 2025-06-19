@@ -3,8 +3,9 @@ import hbs from 'nodemailer-express-handlebars'
 import path from 'path'
 import { envs } from '~/configs/env.config'
 import { BadRequestError } from '~/shared/classes/error.class'
+import { ISendVerifyEmail } from '~/shared/interfaces/common/mail.interface'
 
-export class MailService {
+class MailService {
   private transporter
   private from = envs.MAIL_SERVICE_ROOT || ''
 
@@ -19,15 +20,16 @@ export class MailService {
     })
 
     // Bước 2: Cài handlebars
+
     this.transporter.use(
       'compile',
       hbs({
         viewEngine: {
           extname: '.handlebars',
-          partialsDir: path.resolve('./templates'),
+          partialsDir: path.resolve('./src/templates'),
           defaultLayout: false
         },
-        viewPath: path.resolve('./templates'),
+        viewPath: path.resolve('./src/templates'),
         extName: '.handlebars'
       })
     )
@@ -39,20 +41,21 @@ export class MailService {
    * @param userName tên người nhận
    * @param verifyCode mã xác minh
    */
-  async sendVerifyEmail(toEmail: string, userName: string, verifyCode: string) {
+  async sendVerifyEmail({ toEmail, name, verifyCode }: ISendVerifyEmail) {
     const _mailOptions = {
       from: this.from,
       to: toEmail,
       subject: 'Verify your email',
       template: 'verifyEmail',
       context: {
-        name: userName,
+        name,
         code: verifyCode
       }
     }
 
     //
     try {
+      console.log('✅ Đang gửi email xác minh:', toEmail)
       const info = await this.transporter.sendMail(_mailOptions)
       console.log('✅ Đã gửi email xác minh:', info.response)
     } catch (error) {
@@ -61,3 +64,6 @@ export class MailService {
     }
   }
 }
+
+const mailServiceInstance = new MailService()
+export default mailServiceInstance

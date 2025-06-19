@@ -2,11 +2,15 @@ import { ObjectId } from 'mongodb'
 import { StringValue } from 'ms'
 import { envs } from '~/configs/env.config'
 import { LoginUserDto, RegisterUserDto } from '~/dtos/requests/User.dto'
+import cacheServiceInstance from '~/helpers/cache.helper'
+import mailServiceInstance from '~/helpers/mail.helper'
+import { emailQueue } from '~/libs/bull/queues'
 import { RefreshTokenCollection, RefreshTokenSchema } from '~/models/schemas/RefreshToken.schema'
 import { UserCollection, UserSchema } from '~/models/schemas/User.schema'
 import { ConflictError, UnauthorizedError } from '~/shared/classes/error.class'
 import { TokenType } from '~/shared/enums/type.enum'
 import { IJwtPayload } from '~/shared/interfaces/common/jwt.interface'
+import { createKeyVerifyEmail } from '~/utils/createKeyCache'
 import { hashPassword, verifyPassword } from '~/utils/crypto.util'
 import { signToken } from '~/utils/jwt.util'
 
@@ -26,11 +30,21 @@ class UsersService {
       new UserSchema({ ...payload, password: passwordHashed, day_of_birth: new Date(payload.day_of_birth) })
     )
 
-    // Khi đăng kí thành công thì cho người dùng đăng nhập luônluôn
+    // Khi đăng kí thành công thì cho người dùng đăng nhập luôn
     const [access_token, refresh_token] = await this.signAccessAndRefreshToken({
       user_id: result.insertedId.toString()
     })
     await RefreshTokenCollection.insertOne(new RefreshTokenSchema({ token: refresh_token, user_id: result.insertedId }))
+
+    // Send email to verify (mặc định 10p để verify, nếu không phải resend lại email)
+    const verifyCode = Math.floor(100000 + Math.random() * 900000).toString()
+    const keyCache = createKeyVerifyEmail(payload.email)
+    const isCached = await cacheServiceInstance.setCache(keyCache, verifyCode)
+
+    if (isCached) {
+      console.log('isCached:::', isCached)
+      await emailQueue.add({ toEmail: payload.email, name: payload.name, verifyCode })
+    }
 
     //
     return {
@@ -90,6 +104,7 @@ class UsersService {
     )
   }
 
+  //  For local
   async signAccessAndRefreshToken(payload: Pick<IJwtPayload, 'user_id'>): Promise<[string, string]> {
     return (await Promise.all([
       signToken({
