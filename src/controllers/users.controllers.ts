@@ -24,6 +24,13 @@ class UsersController {
     res.json(new OkResponse('Logout Success', result))
   }
 
+  async verifyEmail(req: Request, res: Response, next: NextFunction) {
+    const { verifyCode } = req.body
+    const { user_id } = req.decoded_authorization as IJwtPayload
+    const result = await UsersService.verifyEmail(user_id, verifyCode)
+    res.json(new OkResponse('Get Me Success', result))
+  }
+
   async getMe(req: Request, res: Response, next: NextFunction) {
     const { user_id } = req.decoded_authorization as IJwtPayload
     const result = await UsersService.getMe(user_id)

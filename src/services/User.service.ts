@@ -82,6 +82,8 @@ class UsersService {
     return await RefreshTokenCollection.deleteOne({ token: refresh_token })
   }
 
+  async verifyEmail(user_id: string, verifyCode: string) {}
+
   async getMe(id: string) {
     return await UserCollection.findOne(
       { _id: new ObjectId(id) },

@@ -28,8 +28,12 @@ export const LoginUserDtoSchema = z.object({
 })
 
 export const logoutUserDtoSchema = z.object({
-  accee: z.string().email(),
+  refresh_token: z.string(),
   password: z.string()
+})
+
+export const verifyEmailDtoSchema = z.object({
+  verifyCode: z.string()
 })
 
 export type RegisterUserDto = z.infer<typeof RegisterUserDtoSchema>
