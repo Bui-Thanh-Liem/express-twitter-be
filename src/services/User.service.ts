@@ -101,7 +101,11 @@ class UsersService {
       { _id: new ObjectId(user._id) },
       {
         $set: {
-          verify: EUserVerifyStatus.Verified
+          verify: EUserVerifyStatus.Verified,
+          email_verify_token: ''
+        },
+        $currentDate: {
+          updated_at: true
         }
       }
     )
