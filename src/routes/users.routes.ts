@@ -12,7 +12,7 @@ const usersRoute = Router()
 usersRoute.post('/register', requestValidate(RegisterUserDtoSchema), wrapAsyncHandler(UsersControllers.register))
 usersRoute.post('/login', requestValidate(LoginUserDtoSchema), UsersControllers.login)
 usersRoute.post('/logout', verifyAccessToken, verifyRefreshToken, wrapAsyncHandler(UsersControllers.logout))
-usersRoute.get(
+usersRoute.post(
   '/verify-email',
   requestValidate(verifyEmailDtoSchema),
   verifyTempToken,

@@ -90,8 +90,11 @@ class UsersService {
   }
 
   async verifyEmail(user_id: string, token: string) {
+    console.log('id:::', user_id)
+    console.log('token:::', token)
+
     //
-    const user = await UserCollection.findOne({ _id: new ObjectId(user_id), email_verify_token: token })
+    const user = await UserCollection.findOne({ _id: new ObjectId(user_id) })
     if (!user) {
       throw new NotFoundError('Verify fail')
     }

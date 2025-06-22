@@ -33,7 +33,7 @@ export const logoutUserDtoSchema = z.object({
 })
 
 export const verifyEmailDtoSchema = z.object({
-  email_verify_token: z.string()
+  token: z.string()
 })
 
 export type RegisterUserDto = z.infer<typeof RegisterUserDtoSchema>
