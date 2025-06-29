@@ -63,6 +63,35 @@ class MailService {
       throw new BadRequestError(error as string)
     }
   }
+
+  /**
+   * Gửi email xác minh tài khoản
+   * @param toEmail địa chỉ email người nhận
+   * @param userName tên người nhận
+   * @param verifyCode mã xác minh
+   */
+  async sendForgotPasswordEmail({ toEmail, name, url }: ISendVerifyEmail) {
+    const _mailOptions = {
+      from: this.from,
+      to: toEmail,
+      subject: 'forgot password',
+      template: 'forgotPassword',
+      context: {
+        name,
+        url
+      }
+    }
+
+    //
+    try {
+      console.log('✅ Đang gửi email để đặt lại mật khẩu:', toEmail)
+      const info = await this.transporter.sendMail(_mailOptions)
+      console.log('✅ Đã gửi email để đặt lại mật khẩu:', info.response)
+    } catch (error) {
+      console.error('❌ Lỗi gửi email để đặt lại mật khẩu:', error)
+      throw new BadRequestError(error as string)
+    }
+  }
 }
 
 const mailServiceInstance = new MailService()

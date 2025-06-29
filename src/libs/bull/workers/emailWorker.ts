@@ -1,15 +1,28 @@
 import mailServiceInstance from '~/helpers/mail.helper'
 import { emailQueue } from '../queues'
 
-emailQueue.process(async (job, done) => {
+// Worker xử lý gửi email xác thực
+emailQueue.process('verify-email', 5, async (job, done) => {
   try {
-    console.log('Worker running...')
     const { toEmail, name, url } = job.data
     await mailServiceInstance.sendVerifyEmail({ toEmail, name, url })
-    console.log('Email sent to', toEmail)
-    done() // Báo hoàn thành
+    console.log('Sent verify email to', toEmail)
+    done()
   } catch (error) {
-    console.error(`Failed to send email to ${job.data.toEmail}:`, error)
-    done(new Error('Failed to send email')) // Báo lỗi để Bull retry
+    console.error(`Verify email failed for ${job.data.toEmail}`, error)
+    done(new Error('Verify email failed'))
+  }
+})
+
+// Worker xử lý gửi email quên mật khẩu
+emailQueue.process('forgot-password', 5, async (job, done) => {
+  try {
+    const { toEmail, name, url } = job.data
+    await mailServiceInstance.sendForgotPasswordEmail({ toEmail, name, url })
+    console.log('Sent forgot password email to', toEmail)
+    done()
+  } catch (error) {
+    console.error(`Forgot password email failed for ${job.data.toEmail}`, error)
+    done(new Error('Forgot password email failed'))
   }
 })
