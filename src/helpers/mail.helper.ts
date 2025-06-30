@@ -1,5 +1,4 @@
 import nodemailer from 'nodemailer'
-import hbs from 'nodemailer-express-handlebars'
 import path from 'path'
 import { envs } from '~/configs/env.config'
 import { BadRequestError } from '~/shared/classes/error.class'
@@ -20,6 +19,11 @@ class MailService {
     })
 
     // Bước 2: Cài handlebars
+    this.setupHandlebars()
+  }
+
+  async setupHandlebars() {
+    const { default: hbs } = await import('nodemailer-express-handlebars')
 
     this.transporter.use(
       'compile',
@@ -42,7 +46,7 @@ class MailService {
    * @param verifyCode mã xác minh
    */
   async sendVerifyEmail({ toEmail, name, url }: ISendVerifyEmail) {
-    const _mailOptions = {
+    const mailOptions = {
       from: this.from,
       to: toEmail,
       subject: 'Verify your email',
@@ -56,7 +60,7 @@ class MailService {
     //
     try {
       console.log('✅ Đang gửi email xác minh:', toEmail)
-      const info = await this.transporter.sendMail(_mailOptions)
+      const info = await this.transporter.sendMail(mailOptions)
       console.log('✅ Đã gửi email xác minh:', info.response)
     } catch (error) {
       console.error('❌ Lỗi gửi email xác minh:', error)
