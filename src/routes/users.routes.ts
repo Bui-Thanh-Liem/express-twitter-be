@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import UsersControllers from '~/controllers/users.controllers'
+import UsersControllers from '~/controllers/Users.controllers'
 import {
   ChangePasswordDtoSchema,
   ForgotPasswordDtoSchema,
