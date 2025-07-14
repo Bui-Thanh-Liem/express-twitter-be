@@ -2,10 +2,12 @@ import express from 'express'
 import morgan from 'morgan'
 import database from '~/configs/database.config'
 import { envs } from './configs/env.config'
+import StreamVideoController from './controllers/StreamVideo.controller'
 import { errorHandler } from './middlewares/errorhandler.middleware'
 import { loggerMiddleware } from './middlewares/logger.middleware'
-import usersRoute from './routes/users.routes'
 import uploadsRoute from './routes/uploads.routes'
+import usersRoute from './routes/users.routes'
+import { UPLOAD_IMAGE_FOLDER_PATH, UPLOAD_VIDEO_FOLDER_PATH } from './shared/consts/path.conts'
 
 const app = express()
 const port = envs.SERVER_PORT
@@ -18,6 +20,9 @@ app.use(express.json())
 //
 app.use('/users', usersRoute)
 app.use('/uploads', uploadsRoute)
+app.use('/:filename', StreamVideoController.streamVideo)
+app.use(express.static(UPLOAD_IMAGE_FOLDER_PATH))
+app.use(express.static(UPLOAD_VIDEO_FOLDER_PATH))
 
 //
 app.use(errorHandler)

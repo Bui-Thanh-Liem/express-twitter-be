@@ -87,6 +87,7 @@ class UsersService {
 
     //
     const [access_token, refresh_token] = await this.signAccessAndRefreshToken({ user_id: exist._id.toString() })
+    // await RefreshTokenCollection.deleteOne({ user_id: exist._id }) // => Đăng nhập 1 thiết bị
     await RefreshTokenCollection.insertOne(new RefreshTokenSchema({ token: refresh_token, user_id: exist._id }))
 
     return {
@@ -108,6 +109,7 @@ class UsersService {
     const exist = await this.findOneByEmail(userInfo?.email)
     if (exist) {
       const [access_token, refresh_token] = await this.signAccessAndRefreshToken({ user_id: exist._id.toString() })
+      // await RefreshTokenCollection.deleteOne({ user_id: exist._id }) // => Đăng nhập 1 thiết bị
       await RefreshTokenCollection.insertOne(new RefreshTokenSchema({ token: refresh_token, user_id: exist._id }))
 
       return {
@@ -342,6 +344,17 @@ class UsersService {
         }
       }
     )
+  }
+
+  async refreshToken({ user_id, token }: { user_id: string; token: string }) {
+    const [access_token, refresh_token] = await this.signAccessAndRefreshToken({ user_id })
+
+    await Promise.all([
+      RefreshTokenCollection.deleteOne({ token }),
+      RefreshTokenCollection.insertOne(new RefreshTokenSchema({ token: refresh_token, user_id: new ObjectId(user_id) }))
+    ])
+
+    return { access_token, refresh_token }
   }
 
   async toggleFollow(user_id: string, followed_user_id: string) {

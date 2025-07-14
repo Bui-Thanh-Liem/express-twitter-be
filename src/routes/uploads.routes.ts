@@ -1,9 +1,10 @@
 import { Router } from 'express'
-import UploadsControllers from '~/controllers/Uploads.controllers'
+import UploadsControllers from '~/controllers/Uploads.controller'
 import { wrapAsyncHandler } from '~/utils/wrapAsyncHandler.util'
 
 const uploadsRoute = Router()
 
-uploadsRoute.post('/medias', wrapAsyncHandler(UploadsControllers.uploadSingleImage))
+uploadsRoute.post('/images', wrapAsyncHandler(UploadsControllers.uploadImages))
+uploadsRoute.post('/videos', wrapAsyncHandler(UploadsControllers.uploadVideos))
 
 export default uploadsRoute

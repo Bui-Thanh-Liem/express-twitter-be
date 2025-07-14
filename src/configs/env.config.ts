@@ -1,9 +1,11 @@
 import dotenv from 'dotenv'
 
-const envFile = process.env.NODE_ENV === 'production' ? '.env' : '.env.dev'
+const envFile = process.env.NODE_ENV !== 'development' ? '.env' : '.env.dev'
 dotenv.config({ path: envFile })
 
 export const envs = {
+  NODE_ENV: process.env.NODE_ENV || '',
+
   DB_USERNAME: process.env.DB_USERNAME || '',
   DB_PASSWORD: process.env.DB_PASSWORD || '',
   DB_NAME: process.env.DB_NAME || '',
@@ -15,6 +17,7 @@ export const envs = {
   SERVER_HOST: process.env.SERVER_HOST || 'localhost',
 
   CLIENT_DOMAIN: process.env.CLIENT_DOMAIN || 'http://localhost:3000',
+  SERVER_DOMAIN: process.env.SERVER_DOMAIN || 'http://localhost:9000',
 
   PASSWORD_SALT: process.env.PASSWORD_SALT || '',
 

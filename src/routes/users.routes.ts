@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import UsersControllers from '~/controllers/Users.controllers'
+import UsersControllers from '~/controllers/Users.controller'
 import {
   ChangePasswordDtoSchema,
   ForgotPasswordDtoSchema,
@@ -29,6 +29,8 @@ usersRoute.post('/login', requestBodyValidate(LoginUserDtoSchema), UsersControll
 usersRoute.get('/google-login', UsersControllers.googleLogin)
 
 usersRoute.post('/logout', verifyAccessToken, verifyRefreshToken, wrapAsyncHandler(UsersControllers.logout))
+
+usersRoute.post('/refresh-token', verifyRefreshToken, wrapAsyncHandler(UsersControllers.refreshToken))
 
 usersRoute.post(
   '/change-password',
