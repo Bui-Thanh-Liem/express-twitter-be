@@ -20,7 +20,7 @@ app.use(express.json())
 //
 app.use('/users', usersRoute)
 app.use('/uploads', uploadsRoute)
-app.use('/:filename', StreamVideoController.streamVideo)
+app.use('/video/:filename', StreamVideoController.streamVideo)
 app.use(express.static(UPLOAD_IMAGE_FOLDER_PATH))
 app.use(express.static(UPLOAD_VIDEO_FOLDER_PATH))
 

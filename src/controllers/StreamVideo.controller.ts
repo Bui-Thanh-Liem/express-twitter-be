@@ -18,7 +18,7 @@ class StreamVideoController {
     const videoPath = path.resolve(UPLOAD_VIDEO_FOLDER_PATH, filename)
 
     const videoSize = fs.statSync(videoPath).size
-    const chunkSize = 30 * 10 ** 6 // 1mb - byte
+    const chunkSize = 10 ** 6 // 1mb - byte
     console.log('chunkSize:::', chunkSize)
 
     const start = Number(range?.replace(/\D/g, ''))

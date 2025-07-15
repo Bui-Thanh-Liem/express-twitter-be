@@ -1,7 +1,9 @@
 import { Request } from 'express'
 // const { default: formidable } = await import('formidable')
-import formidable, { File } from 'formidable'
+import formidable, { File, Part } from 'formidable'
 import fs from 'fs'
+import { nanoid } from 'nanoid'
+import path from 'path'
 import { envs } from '~/configs/env.config'
 import { BadRequestError } from '~/shared/classes/error.class'
 import { UPLOAD_IMAGE_FOLDER_PATH, UPLOAD_VIDEO_FOLDER_PATH } from '~/shared/consts/path.conts'
@@ -44,7 +46,6 @@ export function uploadImages(req: Request): Promise<string[]> {
       }
 
       const imageUploaded = files['images'] as File[]
-
       ;(async () => {
         try {
           const compressedFiles = await Promise.all(imageUploaded.map((img) => compressionFile(img)))
@@ -84,6 +85,19 @@ export function uploadVideos(req: Request): Promise<string[]> {
       }
 
       return valid
+    },
+    filename(name: string, ext: string, part: Part) {
+      // Mục đích tạo cho mỗi video 1 folder để convert HLS
+      const filename = nanoid()
+
+      //
+      const folderPath = path.join(UPLOAD_VIDEO_FOLDER_PATH, filename)
+
+      if (!fs.existsSync(folderPath)) {
+        fs.mkdirSync(folderPath, { recursive: true })
+      }
+
+      return `${filename}/${filename}${ext}`
     }
   })
 
