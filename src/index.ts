@@ -1,5 +1,6 @@
 import express from 'express'
 import morgan from 'morgan'
+import cors from 'cors'
 import database from '~/configs/database.config'
 import { envs } from './configs/env.config'
 import StreamVideoController from './controllers/StreamVideo.controller'
@@ -13,6 +14,7 @@ const app = express()
 const port = envs.SERVER_PORT
 const host = envs.SERVER_HOST
 
+app.use(cors())
 app.use(morgan('dev'))
 app.use(loggerMiddleware)
 app.use(express.json())
@@ -20,9 +22,11 @@ app.use(express.json())
 //
 app.use('/users', usersRoute)
 app.use('/uploads', uploadsRoute)
-app.use('/video/:filename', StreamVideoController.streamVideo)
-app.use(express.static(UPLOAD_IMAGE_FOLDER_PATH))
-app.use(express.static(UPLOAD_VIDEO_FOLDER_PATH))
+app.use('/videos-streaming/:filename', StreamVideoController.streamVideo)
+app.use('/videos-hls/:foldername/master.m3u8', StreamVideoController.streamMaster)
+app.use('/videos-hls/:foldername/:v/:segment', StreamVideoController.streamSegment)
+app.use(express.static(UPLOAD_IMAGE_FOLDER_PATH)) // Static file serving
+app.use(express.static(UPLOAD_VIDEO_FOLDER_PATH)) // Static file serving
 
 //
 app.use(errorHandler)

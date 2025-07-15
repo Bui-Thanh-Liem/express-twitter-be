@@ -8,13 +8,14 @@ import { UPLOAD_VIDEO_FOLDER_PATH } from '~/shared/consts/path.conts'
 class StreamVideoController {
   async streamVideo(req: Request, res: Response, next: NextFunction) {
     const range = req.headers.range
+    const { filename } = req.params
+
     console.log('range::', range)
 
     if (!range) {
       throw new BadRequestError('Required range headers')
     }
 
-    const { filename } = req.params
     const videoPath = path.resolve(UPLOAD_VIDEO_FOLDER_PATH, filename)
 
     const videoSize = fs.statSync(videoPath).size
@@ -40,6 +41,18 @@ class StreamVideoController {
     res.writeHead(206, headers)
     const videoStreams = fs.createReadStream(videoPath, { start, end })
     videoStreams.pipe(res)
+  }
+
+  async streamMaster(req: Request, res: Response, next: NextFunction) {
+    const { foldername } = req.params
+    const masterFile = path.resolve(UPLOAD_VIDEO_FOLDER_PATH, foldername, 'master.m3u8')
+    res.sendFile(masterFile)
+  }
+
+  async streamSegment(req: Request, res: Response, next: NextFunction) {
+    const { foldername, v, segment } = req.params
+    const segmentFile = path.resolve(UPLOAD_VIDEO_FOLDER_PATH, foldername, v, segment)
+    res.sendFile(segmentFile)
   }
 }
 

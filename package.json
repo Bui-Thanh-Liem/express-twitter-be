@@ -21,6 +21,7 @@
   "description": "",
   "devDependencies": {
     "@eslint/js": "^9.23.0",
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.1",
     "@types/formidable": "^3.4.5",
     "@types/jsonwebtoken": "^9.0.9",
@@ -47,6 +48,7 @@
   "dependencies": {
     "axios": "^1.10.0",
     "bull": "^4.16.5",
+    "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "execa": "^9.6.0",
     "express": "^5.1.0",
