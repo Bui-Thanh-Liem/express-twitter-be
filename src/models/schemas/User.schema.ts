@@ -1,4 +1,4 @@
-import { Collection } from 'mongodb'
+import { Collection, Db } from 'mongodb'
 import database from '~/configs/database.config'
 import { EUserVerifyStatus } from '~/shared/enums/status.enum'
 import { IUser } from '~/shared/interfaces/schemas/user.interface'
@@ -37,4 +37,8 @@ export class UserSchema extends BaseSchema implements IUser {
   }
 }
 
-export const UserCollection = database.getDb().collection('users') as Collection<UserSchema>
+export let UserCollection: Collection<UserSchema>
+
+export function initUserCollection(db: Db) {
+  UserCollection = db.collection<UserSchema>('users')
+}

@@ -1,6 +1,6 @@
 // import { execa } from 'execa'
 import path from 'path'
-import slash from 'slash'
+// import slash from 'slash'
 
 const MAXIMUM_BITRATE_720P = 5 * 10 ** 6
 const MAXIMUM_BITRATE_1080P = 8 * 10 ** 6
@@ -13,6 +13,7 @@ const runFFprobe = async (args: string[]) => {
 }
 
 export const checkVideoHasAudio = async (filePath: string) => {
+  const slash = (await import('slash')).default
   const stdout = await runFFprobe([
     '-v',
     'error',
@@ -28,6 +29,7 @@ export const checkVideoHasAudio = async (filePath: string) => {
 }
 
 const getBitrate = async (filePath: string) => {
+  const slash = (await import('slash')).default
   const stdout = await runFFprobe([
     '-v',
     'error',
@@ -43,6 +45,7 @@ const getBitrate = async (filePath: string) => {
 }
 
 const getResolution = async (filePath: string) => {
+  const slash = (await import('slash')).default
   const stdout = await runFFprobe([
     '-v',
     'error',
@@ -81,6 +84,7 @@ const encodeHLS = async (
   resolutionLevels: Array<{ height: number; label: keyof EncodeByResolution['bitrate'] }>,
   { inputPath, isHasAudio, outputPath, outputSegmentPath, bitrate, resolution }: EncodeByResolution
 ) => {
+  const slash = (await import('slash')).default
   const args: string[] = [
     '-y',
     '-i',
@@ -168,14 +172,14 @@ export const encodeHLSWithMultipleVideoStreams = async (inputPath: string) => {
     inputPath,
     isHasAudio,
     outputPath,
-    outputSegmentPath,
     bitrate: {
       720: bitrate720,
       1080: bitrate1080,
       1440: bitrate1440,
       original: bitrate
     },
-    resolution
+    resolution,
+    outputSegmentPath
   })
 
   return true

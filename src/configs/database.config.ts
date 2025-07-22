@@ -1,5 +1,9 @@
 import { Db, MongoClient, ServerApiVersion } from 'mongodb'
 import { envs } from '~/configs/env.config'
+import { initFollowerCollection } from '~/models/schemas/Follower.schema'
+import { initRefreshTokenCollection } from '~/models/schemas/RefreshToken.schema'
+import { initUserCollection, UserCollection } from '~/models/schemas/User.schema'
+import { initVideoCollection } from '~/models/schemas/Video.schema'
 
 class DatabaseConfig {
   private client: MongoClient
@@ -28,6 +32,18 @@ class DatabaseConfig {
   async disconnect() {
     await this.client.close()
     console.log('Disconnected from MongoDB')
+  }
+
+  initialCollections() {
+    initUserCollection(this.db)
+    initRefreshTokenCollection(this.db)
+    initFollowerCollection(this.db)
+    initVideoCollection(this.db)
+  }
+
+  initialIndex() {
+    UserCollection.createIndex({ email: 1 }, { unique: true })
+    UserCollection.createIndex({ username: 1 }, { unique: true })
   }
 
   getDb() {

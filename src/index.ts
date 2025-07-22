@@ -37,6 +37,12 @@ async function bootstrap() {
     await database.connect()
     console.log('Database connected!')
 
+    database.initialCollections()
+    console.log('Cerated collections!')
+
+    database.initialIndex()
+    console.log('Cerated index!')
+
     app.listen(port, host, () => {
       console.log(`Example app listening on ${host}:${port}`)
     })

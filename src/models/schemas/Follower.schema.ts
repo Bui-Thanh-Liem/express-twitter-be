@@ -1,4 +1,4 @@
-import { Collection, ObjectId } from 'mongodb'
+import { Collection, Db, ObjectId } from 'mongodb'
 import database from '~/configs/database.config'
 import { IFollower } from '~/shared/interfaces/schemas/follower.interface'
 import { BaseSchema } from './Base.schema'
@@ -14,4 +14,8 @@ export class FollowerSchema extends BaseSchema implements IFollower {
   }
 }
 
-export const FollowerCollection = database.getDb().collection('followers') as Collection<FollowerSchema>
+export let FollowerCollection: Collection<FollowerSchema>
+
+export function initFollowerCollection(db: Db) {
+  FollowerCollection = db.collection<FollowerSchema>('followers')
+}

@@ -2,7 +2,7 @@ import axios from 'axios'
 import { ObjectId } from 'mongodb'
 import { StringValue } from 'ms'
 import { envs } from '~/configs/env.config'
-import { CONSTANT_USER } from '~/constants'
+import { CONSTANT_JOB, CONSTANT_USER } from '~/constants'
 import {
   ForgotPasswordDto,
   LoginUserDto,
@@ -11,7 +11,7 @@ import {
   UpdateMeDto
 } from '~/dtos/requests/User.dto'
 import cacheServiceInstance from '~/helpers/cache.helper'
-import { emailQueue } from '~/libs/bull/queues'
+import { sendEmailQueue } from '~/libs/bull/queues'
 import { FollowerCollection } from '~/models/schemas/Follower.schema'
 import { RefreshTokenCollection, RefreshTokenSchema } from '~/models/schemas/RefreshToken.schema'
 import { UserCollection, UserSchema } from '~/models/schemas/User.schema'
@@ -59,7 +59,7 @@ class UsersService {
     await RefreshTokenCollection.insertOne(new RefreshTokenSchema({ token: refresh_token, user_id: result.insertedId }))
 
     //
-    await emailQueue.add('verify-email', {
+    await sendEmailQueue.add(CONSTANT_JOB.VERIFY_MAIL, {
       toEmail: payload.email,
       name: payload.name,
       url: `${envs.CLIENT_DOMAIN}/verify?token=${email_verify_token}`
@@ -199,7 +199,7 @@ class UsersService {
     )
 
     //
-    await emailQueue.add('forgot-password', {
+    await sendEmailQueue.add(CONSTANT_JOB.FORGOT_PASSWORD, {
       toEmail: user?.email,
       name: user?.name,
       url: `${envs.CLIENT_DOMAIN}/reset-password?token=${forgot_password_token}`
@@ -278,7 +278,7 @@ class UsersService {
     )
 
     //
-    await emailQueue.add('verify-email', {
+    await sendEmailQueue.add(CONSTANT_JOB.VERIFY_MAIL, {
       toEmail: user?.email,
       name: user?.name,
       url: `${envs.CLIENT_DOMAIN}/verify?token=${email_verify_token}`

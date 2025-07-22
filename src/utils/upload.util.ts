@@ -2,12 +2,53 @@ import { Request } from 'express'
 // const { default: formidable } = await import('formidable')
 import formidable, { File, Part } from 'formidable'
 import fs from 'fs'
+import { InsertOneResult, ObjectId } from 'mongodb'
 import { nanoid } from 'nanoid'
 import path from 'path'
 import { envs } from '~/configs/env.config'
+import { CONSTANT_JOB } from '~/constants'
+import { compressionQueue } from '~/libs/bull/queues'
+import { VideoSchema } from '~/models/schemas/Video.schema'
+import VideosService from '~/services/Video.service'
 import { BadRequestError } from '~/shared/classes/error.class'
 import { UPLOAD_IMAGE_FOLDER_PATH, UPLOAD_VIDEO_FOLDER_PATH } from '~/shared/consts/path.conts'
-import { compressionFile, compressionVideo } from './compression.util'
+import { compressionFile } from './compression.util'
+
+// class Queue {
+//   items: string[]
+//   encoding: boolean
+//   constructor() {
+//     this.items = []
+//     this.encoding = false
+//   }
+
+//   enqueue(item: string) {
+//     this.items.push(item)
+//     this.processEncode()
+//   }
+
+//   async processEncode() {
+//     if (this.encoding) return
+//     if (this.items.length > 0) {
+//       this.encoding = true
+//       const filepath = this.items[0]
+//       try {
+//         await compressionVideo(filepath)
+//         this.items.shift()
+//         console.log(`Encode video ${filepath} success`)
+//       } catch (error) {
+//         console.log(`Encode video ${filepath} error`)
+//         console.log('error:::', error)
+//       }
+//       this.encoding = false
+//       this.processEncode()
+//     } else {
+//       console.log('Encode video queue is empty')
+//     }
+//   }
+// }
+
+// const queue = new Queue()
 
 export function uploadImages(req: Request): Promise<string[]> {
   //
@@ -116,9 +157,24 @@ export function uploadVideos(req: Request): Promise<string[]> {
         try {
           const videoMap = Promise.all(
             videoUploaded.map(async (video) => {
-              console.log('video::', video)
-              await compressionVideo(video.filepath)
-              return `${envs.SERVER_DOMAIN}/${video.newFilename}`
+
+              //
+              const user_id = new ObjectId(req.decoded_authorization?.user_id)
+              const name = video.newFilename.split('/')[0]
+              const newVideo = await VideosService.create({
+                name,
+                user_id,
+                size: video.size
+              })
+
+              // Sử dụng Queue phía trên đơn giản hơn, nhưng chung thread (lag app), không tận dụng chạy song song, không retry
+              compressionQueue.add(CONSTANT_JOB.COMPRESSION_HLS, {
+                _id: newVideo.insertedId,
+                path: video.filepath
+              })
+
+              //
+              return name
             })
           )
 

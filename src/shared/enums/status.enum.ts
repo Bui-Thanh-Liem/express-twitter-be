@@ -3,3 +3,9 @@ export enum EUserVerifyStatus {
   Verified,
   Banned
 }
+
+export enum EVideoStatus {
+  Pending,
+  Reject,
+  Success
+}

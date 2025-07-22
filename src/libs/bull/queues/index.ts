@@ -1,1 +1,2 @@
-export * from './emailQueue'
+export * from './compressionQueue'
+export * from './sendEmailQueue'

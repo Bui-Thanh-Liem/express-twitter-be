@@ -1,5 +1,4 @@
-import { Collection, ObjectId } from 'mongodb'
-import database from '~/configs/database.config'
+import { Collection, Db, ObjectId } from 'mongodb'
 import { IRefresh } from '~/shared/interfaces/schemas/refresh.interface'
 import { BaseSchema } from './Base.schema'
 
@@ -14,4 +13,8 @@ export class RefreshTokenSchema extends BaseSchema implements IRefresh {
   }
 }
 
-export const RefreshTokenCollection = database.getDb().collection('refresh_tokens') as Collection<RefreshTokenSchema>
+export let RefreshTokenCollection: Collection<RefreshTokenSchema>
+
+export function initRefreshTokenCollection(db: Db) {
+  RefreshTokenCollection = db.collection<RefreshTokenSchema>('refresh_tokens')
+}
