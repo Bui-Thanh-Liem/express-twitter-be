@@ -98,6 +98,12 @@ class UsersController {
     const result = await UsersServices.toggleFollow(user_id, followed_user_id)
     res.json(new OkResponse(`${result} Success`, true))
   }
+
+  async getIdByUsername(req: Request, res: Response, next: NextFunction) {
+    const { username } = req.params
+    const result = await UsersServices.getIdByUsername(username)
+    res.json(new OkResponse(`${result} Success`, result))
+  }
 }
 
 export default new UsersController()

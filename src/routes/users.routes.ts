@@ -76,4 +76,6 @@ usersRoute.post(
   wrapAsyncHandler(UsersControllers.toggleFollow)
 )
 
+usersRoute.get('/username/:username', verifyAccessToken, wrapAsyncHandler(UsersControllers.getIdByUsername))
+
 export default usersRoute

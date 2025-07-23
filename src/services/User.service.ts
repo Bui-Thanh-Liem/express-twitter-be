@@ -306,6 +306,10 @@ class UsersService {
     return await this.getUserActive(user_id)
   }
 
+  async getIdByUsername(username: string) {
+    return await UserCollection.findOne({ username }, { projection: { _id: 1 } })
+  }
+
   async updateMe(user_id: string, payload: UpdateMeDto) {
     const user = await UserCollection.findOne({ username: payload.username, _id: { $ne: new ObjectId(user_id) } })
     if (user) {
