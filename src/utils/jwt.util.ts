@@ -12,8 +12,19 @@ export async function signToken({
   privateKey?: string
   options?: SignOptions
 }) {
+  if (payload?.exp) {
+    return new Promise<string>((resolve, reject) => {
+      jwt.sign({ ...payload }, privateKey, {}, (err, token) => {
+        if (err || !token) {
+          reject(err)
+          return
+        }
+        resolve(token)
+      })
+    })
+  }
   return new Promise<string>((resolve, reject) => {
-    jwt.sign(payload, privateKey, options, (err, token) => {
+    jwt.sign({ ...payload }, privateKey, options, (err, token) => {
       if (err || !token) {
         reject(err)
         return

@@ -22,7 +22,7 @@ import { IJwtPayload } from '~/shared/interfaces/common/jwt.interface'
 import { IGoogleToken, IGoogleUserProfile } from '~/shared/interfaces/common/oauth-google.interface'
 import { IUser } from '~/shared/interfaces/schemas/user.interface'
 import { generatePassword, hashPassword, verifyPassword } from '~/utils/crypto.util'
-import { signToken } from '~/utils/jwt.util'
+import { signToken, verifyToken } from '~/utils/jwt.util'
 
 class UsersService {
   async register(payload: RegisterUserDto) {
@@ -53,10 +53,15 @@ class UsersService {
     )
 
     const [access_token, refresh_token] = await this.signAccessAndRefreshToken({
-      user_id: result.insertedId.toString()
+      payload: {
+        user_id: result.insertedId.toString()
+      }
     })
     // Khi đăng kí thành công thì cho người dùng đăng nhập luôn
-    await RefreshTokenCollection.insertOne(new RefreshTokenSchema({ token: refresh_token, user_id: result.insertedId }))
+    const { iat, exp } = await this.verifyToken(refresh_token, envs.JWT_SECRET_REFRESH)
+    await RefreshTokenCollection.insertOne(
+      new RefreshTokenSchema({ token: refresh_token, user_id: result.insertedId, iat, exp })
+    )
 
     //
     await sendEmailQueue.add(CONSTANT_JOB.VERIFY_MAIL, {
@@ -86,9 +91,14 @@ class UsersService {
     }
 
     //
-    const [access_token, refresh_token] = await this.signAccessAndRefreshToken({ user_id: exist._id.toString() })
+    const [access_token, refresh_token] = await this.signAccessAndRefreshToken({
+      payload: { user_id: exist._id.toString() }
+    })
     // await RefreshTokenCollection.deleteOne({ user_id: exist._id }) // => Đăng nhập 1 thiết bị
-    await RefreshTokenCollection.insertOne(new RefreshTokenSchema({ token: refresh_token, user_id: exist._id }))
+    const { iat, exp } = await this.verifyToken(refresh_token, envs.JWT_SECRET_REFRESH)
+    await RefreshTokenCollection.insertOne(
+      new RefreshTokenSchema({ token: refresh_token, user_id: exist._id, iat, exp })
+    )
 
     return {
       access_token,
@@ -108,9 +118,14 @@ class UsersService {
     //
     const exist = await this.findOneByEmail(userInfo?.email)
     if (exist) {
-      const [access_token, refresh_token] = await this.signAccessAndRefreshToken({ user_id: exist._id.toString() })
+      const [access_token, refresh_token] = await this.signAccessAndRefreshToken({
+        payload: { user_id: exist._id.toString() }
+      })
       // await RefreshTokenCollection.deleteOne({ user_id: exist._id }) // => Đăng nhập 1 thiết bị
-      await RefreshTokenCollection.insertOne(new RefreshTokenSchema({ token: refresh_token, user_id: exist._id }))
+      const { iat, exp } = await this.verifyToken(refresh_token, envs.JWT_SECRET_REFRESH)
+      await RefreshTokenCollection.insertOne(
+        new RefreshTokenSchema({ token: refresh_token, user_id: exist._id, exp, iat })
+      )
 
       return {
         access_token,
@@ -346,12 +361,25 @@ class UsersService {
     )
   }
 
-  async refreshToken({ user_id, token }: { user_id: string; token: string }) {
-    const [access_token, refresh_token] = await this.signAccessAndRefreshToken({ user_id })
+  async refreshToken({ user_id, token, exp }: { user_id: string; token: string; exp?: number }) {
+    console.log('userService - refreshToken - exp:::', exp)
 
+    const [access_token, refresh_token] = await this.signAccessAndRefreshToken({
+      payload: { user_id },
+      exp_refresh: exp
+    })
+
+    const decoded = await this.verifyToken(refresh_token, envs.JWT_SECRET_REFRESH)
     await Promise.all([
       RefreshTokenCollection.deleteOne({ token }),
-      RefreshTokenCollection.insertOne(new RefreshTokenSchema({ token: refresh_token, user_id: new ObjectId(user_id) }))
+      RefreshTokenCollection.insertOne(
+        new RefreshTokenSchema({
+          token: refresh_token,
+          user_id: new ObjectId(user_id),
+          iat: decoded.iat,
+          exp: decoded.exp
+        })
+      )
     ])
 
     return { access_token, refresh_token }
@@ -395,7 +423,13 @@ class UsersService {
   }
 
   // local use
-  async signAccessAndRefreshToken(payload: Pick<IJwtPayload, 'user_id'>): Promise<[string, string]> {
+  async signAccessAndRefreshToken({
+    payload,
+    exp_refresh
+  }: {
+    payload: Pick<IJwtPayload, 'user_id'>
+    exp_refresh?: number
+  }): Promise<[string, string]> {
     return (await Promise.all([
       signToken({
         payload: { ...payload, type: TokenType.accessToken },
@@ -403,11 +437,15 @@ class UsersService {
         options: { expiresIn: envs.ACCESS_TOKEN_EXPIRES_IN as StringValue }
       }),
       signToken({
-        payload: { ...payload, type: TokenType.refreshToken },
+        payload: { ...payload, type: TokenType.refreshToken, exp: exp_refresh },
         privateKey: envs.JWT_SECRET_REFRESH,
         options: { expiresIn: envs.REFRESH_TOKEN_EXPIRES_IN as StringValue }
       })
     ])) as [string, string]
+  }
+
+  async verifyToken(token: string, privateKey: string) {
+    return verifyToken({ token, privateKey })
   }
 
   async getUserActive(user_id: string) {

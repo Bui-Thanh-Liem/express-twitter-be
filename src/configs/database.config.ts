@@ -1,7 +1,7 @@
 import { Db, MongoClient, ServerApiVersion } from 'mongodb'
 import { envs } from '~/configs/env.config'
 import { initFollowerCollection } from '~/models/schemas/Follower.schema'
-import { initRefreshTokenCollection } from '~/models/schemas/RefreshToken.schema'
+import { initRefreshTokenCollection, RefreshTokenCollection } from '~/models/schemas/RefreshToken.schema'
 import { initUserCollection, UserCollection } from '~/models/schemas/User.schema'
 import { initVideoCollection } from '~/models/schemas/Video.schema'
 
@@ -41,9 +41,18 @@ class DatabaseConfig {
     initVideoCollection(this.db)
   }
 
-  initialIndex() {
+  async initialIndex() {
+    const indexUser = await UserCollection.indexExists(['email_1', 'username_1'])
+    const indexRefresh = await RefreshTokenCollection.indexExists(['token_1', 'exp_1'])
+    if (indexUser && indexRefresh) return
+
+    // User
     UserCollection.createIndex({ email: 1 }, { unique: true })
     UserCollection.createIndex({ username: 1 }, { unique: true })
+
+    // Refresh
+    RefreshTokenCollection.createIndex({ token: 1 }, { unique: true })
+    RefreshTokenCollection.createIndex({ exp: 1 }, { expireAfterSeconds: 0 })
   }
 
   getDb() {

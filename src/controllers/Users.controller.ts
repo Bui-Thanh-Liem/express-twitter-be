@@ -38,8 +38,8 @@ class UsersController {
 
   async refreshToken(req: Request, res: Response, next: NextFunction) {
     const { refresh_token } = req.body
-    const { user_id } = req.decoded_refresh_token as IJwtPayload
-    const result = await UsersServices.refreshToken({ user_id, token: refresh_token })
+    const { user_id, exp } = req.decoded_refresh_token as IJwtPayload
+    const result = await UsersServices.refreshToken({ user_id, token: refresh_token, exp })
     res.json(new OkResponse('Refresh token Success', result))
   }
 
