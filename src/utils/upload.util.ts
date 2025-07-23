@@ -157,7 +157,6 @@ export function uploadVideos(req: Request): Promise<string[]> {
         try {
           const videoMap = Promise.all(
             videoUploaded.map(async (video) => {
-
               //
               const user_id = new ObjectId(req.decoded_authorization?.user_id)
               const name = video.newFilename.split('/')[0]

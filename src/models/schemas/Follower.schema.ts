@@ -1,5 +1,4 @@
 import { Collection, Db, ObjectId } from 'mongodb'
-import database from '~/configs/database.config'
 import { IFollower } from '~/shared/interfaces/schemas/follower.interface'
 import { BaseSchema } from './Base.schema'
 

@@ -2,10 +2,9 @@ import { CONSTANT_JOB } from '~/constants'
 import mailServiceInstance from '~/helpers/mail.helper'
 import VideosService from '~/services/Video.service'
 import { BadRequestError } from '~/shared/classes/error.class'
+import { EVideoStatus } from '~/shared/enums/status.enum'
 import { compressionVideo } from '~/utils/compression.util'
 import { compressionQueue, sendEmailQueue } from '../queues'
-import { IVideo } from '~/shared/interfaces/schemas/video.interface'
-import { EVideoStatus } from '~/shared/enums/status.enum'
 
 // Worker xử lý gửi email xác thực
 sendEmailQueue.process(CONSTANT_JOB.VERIFY_MAIL, 5, async (job, done) => {

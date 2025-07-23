@@ -1,5 +1,4 @@
 import { Collection, Db } from 'mongodb'
-import database from '~/configs/database.config'
 import { EUserVerifyStatus } from '~/shared/enums/status.enum'
 import { IUser } from '~/shared/interfaces/schemas/user.interface'
 import { BaseSchema } from './Base.schema'
