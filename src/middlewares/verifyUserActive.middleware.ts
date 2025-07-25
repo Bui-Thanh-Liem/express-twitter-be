@@ -1,11 +1,12 @@
 import { NextFunction, Request, Response } from 'express'
-import { ToggleFollowDto } from '~/dtos/requests/User.dto'
-import UserService from '~/services/User.service'
+import { ToggleFollowDto } from '~/dtos/requests/user.dto'
+import UserService from '~/services/Users.service'
 import { BadRequestError, UnauthorizedError } from '~/shared/classes/error.class'
 import { EUserVerifyStatus } from '~/shared/enums/status.enum'
 import { IJwtPayload } from '~/shared/interfaces/common/jwt.interface'
 
-export async function verifyUserActiveForFollow(req: Request, res: Response, next: NextFunction) {
+// Verify user coi đã xác thực email chưa
+export async function verifyUserActive(req: Request, res: Response, next: NextFunction) {
   try {
     const { user_id } = req.decoded_authorization as IJwtPayload
     const { followed_user_id } = req.params as ToggleFollowDto

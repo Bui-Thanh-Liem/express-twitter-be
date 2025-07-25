@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express'
-import { ChangePasswordDto } from '~/dtos/requests/User.dto'
-import UserService from '~/services/User.service'
+import { ChangePasswordDto } from '~/dtos/requests/user.dto'
+import UserService from '~/services/Users.service'
 import { BadRequestError, UnauthorizedError } from '~/shared/classes/error.class'
 import { EUserVerifyStatus } from '~/shared/enums/status.enum'
 import { IJwtPayload } from '~/shared/interfaces/common/jwt.interface'

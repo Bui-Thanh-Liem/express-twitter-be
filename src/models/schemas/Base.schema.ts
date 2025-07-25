@@ -7,7 +7,7 @@ export abstract class BaseSchema implements IBase {
   updated_at?: Date
 
   constructor() {
-    this._id = undefined
+    this._id = new ObjectId()
     this.created_at = new Date()
     this.updated_at = new Date()
   }

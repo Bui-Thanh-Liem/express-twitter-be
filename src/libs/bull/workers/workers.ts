@@ -1,6 +1,6 @@
 import { CONSTANT_JOB } from '~/constants'
 import mailServiceInstance from '~/helpers/mail.helper'
-import VideosService from '~/services/Video.service'
+import VideosService from '~/services/Videos.service'
 import { BadRequestError } from '~/shared/classes/error.class'
 import { EVideoStatus } from '~/shared/enums/status.enum'
 import { compressionVideo } from '~/utils/compression.util'

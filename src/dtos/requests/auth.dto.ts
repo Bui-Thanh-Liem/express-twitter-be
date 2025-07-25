@@ -1,6 +1,40 @@
 import { z } from 'zod'
 import { CONSTANT_REGEX } from '~/constants'
 
+export const RegisterUserDtoSchema = z
+  .object({
+    name: z.string().min(1).max(20).trim(),
+    email: z.string().email().trim(),
+    password: z
+      .string()
+      .regex(CONSTANT_REGEX.STRONG_PASSWORD, {
+        message:
+          'Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character'
+      })
+      .trim(),
+    confirm_password: z.string().trim(),
+    day_of_birth: z.preprocess((arg) => {
+      if (typeof arg === 'string' || arg instanceof Date) {
+        return new Date(arg)
+      }
+      return arg
+    }, z.date())
+  })
+  .refine((data) => data.password === data.confirm_password, {
+    path: ['confirm_password'],
+    message: 'Passwords do not match'
+  })
+
+export const LoginUserDtoSchema = z.object({
+  email: z.string().email().trim(),
+  password: z.string().trim()
+})
+
+export const logoutUserDtoSchema = z.object({
+  refresh_token: z.string().trim(),
+  password: z.string().trim()
+})
+
 export const verifyEmailDtoSchema = z.object({
   email_verify_token: z.string().trim()
 })
@@ -55,6 +89,8 @@ export const ChangePasswordDtoSchema = z
     message: 'New password do not match'
   })
 
+export type RegisterUserDto = z.infer<typeof RegisterUserDtoSchema>
+export type LoginUserDto = z.infer<typeof RegisterUserDtoSchema>
 export type UpdateMeDto = z.infer<typeof UpdateMeDtoSchema>
 export type ForgotPasswordDto = z.infer<typeof ForgotPasswordDtoSchema>
 export type ResetPasswordDto = z.infer<typeof ResetPasswordDtoSchema>

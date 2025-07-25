@@ -1,7 +1,9 @@
 import { Db, MongoClient, ServerApiVersion } from 'mongodb'
 import { envs } from '~/configs/env.config'
 import { initFollowerCollection } from '~/models/schemas/Follower.schema'
+import { initHashtagCollection } from '~/models/schemas/Hashtag.schema'
 import { initRefreshTokenCollection, RefreshTokenCollection } from '~/models/schemas/RefreshToken.schema'
+import { initTweetCollection } from '~/models/schemas/Tweet.schema'
 import { initUserCollection, UserCollection } from '~/models/schemas/User.schema'
 import { initVideoCollection } from '~/models/schemas/Video.schema'
 
@@ -39,6 +41,8 @@ class DatabaseConfig {
     initRefreshTokenCollection(this.db)
     initFollowerCollection(this.db)
     initVideoCollection(this.db)
+    initTweetCollection(this.db)
+    initHashtagCollection(this.db)
   }
 
   async initialIndex() {

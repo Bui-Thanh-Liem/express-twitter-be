@@ -3,13 +3,8 @@ import { ObjectId } from 'mongodb'
 import { StringValue } from 'ms'
 import { envs } from '~/configs/env.config'
 import { CONSTANT_JOB, CONSTANT_USER } from '~/constants'
-import {
-  ForgotPasswordDto,
-  LoginUserDto,
-  RegisterUserDto,
-  ResetPasswordDto,
-  UpdateMeDto
-} from '~/dtos/requests/User.dto'
+import { RegisterUserDto, LoginUserDto } from '~/dtos/requests/auth.dto'
+import { ForgotPasswordDto, ResetPasswordDto, UpdateMeDto } from '~/dtos/requests/user.dto'
 import cacheServiceInstance from '~/helpers/cache.helper'
 import { sendEmailQueue } from '~/libs/bull/queues'
 import { FollowerCollection } from '~/models/schemas/Follower.schema'
